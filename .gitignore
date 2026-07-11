@@ -153,6 +153,7 @@ cython_debug/
 # Output
 bak/
 result/
+webapp/uploads/
 *.mp4
 *.pt
 *.wav

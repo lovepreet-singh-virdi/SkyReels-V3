@@ -155,6 +155,82 @@ Example:
 export PYTORCH_CUDA_ALLOC_CONF="expandable_segments:True" && python3 generate_video.py --low_vram --resolution 540P ...
 ```
 
+## Local Web UI
+
+If you want a non-technical browser interface, this repo now includes a small local dashboard that wraps `generate_video.py`.
+
+### Start the web app
+
+For the web page only:
+
+```bash
+pip install -r requirements-web.txt
+```
+
+For the full generation stack:
+
+```bash
+pip install -r requirements.txt
+```
+
+If you are on native Windows, the full stack may fail on packages like `flash_attn`. In that case, use the web UI on Windows for the interface, but run the generation backend in WSL2 or Linux with CUDA.
+
+Then start the app:
+
+```bash
+python webapp/app.py
+```
+
+Then open:
+
+```text
+http://127.0.0.1:7860
+```
+
+### What it does
+
+- Lets you choose the task from a form.
+- Accepts either URLs/paths or local uploads.
+- Runs the same SkyReels scripts in the background.
+- Shows the command, logs, and final video result in the browser.
+
+### Notes
+
+- Keep this on your own machine unless you add authentication.
+- `--low_vram` is the supported memory-saving mode in `generate_video.py`.
+- The web UI is intentionally simple and uses plain HTML, CSS, JavaScript, and Flask, so you do not need React unless you want a richer app later.
+- If you want the full model features on Windows, use the web UI in `WSL2 / Linux backend` mode and run the generation environment inside WSL2.
+- Set `SKYREELS_BACKEND_MODE=wsl` and `SKYREELS_WSL_WORKDIR=/mnt/d/Nitika/Projects/SkyReels-V3` before starting [webapp/app.py](/D:/Nitika/Projects/SkyReels-V3/webapp/app.py).
+
+## Docker
+
+Yes, this can be run as one Docker-based command on a machine with Docker Desktop and NVIDIA GPU support.
+
+### Build and start
+
+```bash
+docker compose up --build
+```
+
+Then open:
+
+```text
+http://127.0.0.1:7860
+```
+
+### What Docker gives you
+
+- A single repeatable environment
+- No manual Python install on Windows
+- The full generation stack runs inside the container
+- Your generated videos are saved to `./result`
+
+### Notes
+
+- This uses a Linux GPU container, which is the reliable way to run the model stack.
+- You still need the NVIDIA container runtime / GPU support enabled in Docker Desktop.
+- If Docker starts without GPU access, the web page may load but video generation will fail.
+
 
 ## Introduction of SkyReels-V3
 

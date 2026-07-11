@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>SkyReels V3 Local Generator</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+  <main class="page-shell">
+    <section class="hero">
+      <div>
+        <p class="eyebrow">SkyReels V3</p>
+        <h1>Local video generation, without command-line stress.</h1>
+        <p class="lede">
+          Fill out a form, click generate, and the app will run the existing SkyReels scripts on your machine.
+          Results appear here when the job finishes.
+        </p>
+      </div>
+      <div class="hero-card">
+        <div><span>Status</span><strong id="job-status">Idle</strong></div>
+        <div><span>Last job</span><strong id="job-id">None</strong></div>
+        <div><span>Output</span><strong id="job-output">Waiting</strong></div>
+      </div>
+    </section>
+
+    <section class="layout">
+      <form id="generator-form" class="panel form-panel">
+        <div class="section-header">
+          <h2>Generate</h2>
+          <p>All inputs support either local file upload or a URL/path.</p>
+        </div>
+
+        <label>
+          Task type
+          <select name="task_type" id="task_type">
+            <option value="reference_to_video">Reference to Video</option>
+            <option value="single_shot_extension">Single Shot Extension</option>
+            <option value="shot_switching_extension">Shot Switching Extension</option>
+            <option value="talking_avatar">Talking Avatar</option>
+          </select>
+        </label>
+
+        <label>
+          Prompt
+          <textarea name="prompt" rows="5" placeholder="Describe the video you want to create."></textarea>
+        </label>
+
+        <div class="grid-2">
+          <label>
+            Duration
+            <input name="duration" type="number" min="1" step="1" value="5">
+          </label>
+          <label>
+            Seed
+            <input name="seed" type="number" step="1" value="42">
+          </label>
+        </div>
+
+        <div class="grid-2">
+          <label>
+            Resolution
+            <select name="resolution">
+              <option value="720P">720P</option>
+              <option value="540P">540P</option>
+              <option value="480P">480P</option>
+            </select>
+          </label>
+          <label>
+            Model ID
+            <input name="model_id" type="text" placeholder="Optional Hugging Face repo or local path">
+          </label>
+        </div>
+
+        <label>
+          Backend mode
+          <select name="backend_mode" id="backend_mode">
+            <option value="native">Native Python</option>
+            <option value="wsl">WSL2 / Linux backend</option>
+          </select>
+        </label>
+
+        <div class="flags">
+          <label><input type="checkbox" name="offload"> Offload</label>
+          <label><input type="checkbox" name="low_vram"> Low VRAM</label>
+          <label><input type="checkbox" name="use_usp"> Multi-GPU USP</label>
+        </div>
+
+        <label>
+          Processes for USP
+          <input name="nproc_per_node" type="number" min="1" step="1" value="4">
+        </label>
+
+        <div class="task-panel" data-task="reference_to_video">
+          <h3>Reference Images</h3>
+          <label>
+            Reference image URLs or paths, comma-separated
+            <textarea name="ref_imgs" rows="3" placeholder="https://.../img1.png,https://.../img2.png"></textarea>
+          </label>
+          <label>
+            Upload reference images
+            <input name="ref_img_files" type="file" accept="image/*" multiple>
+          </label>
+        </div>
+
+        <div class="task-panel hidden" data-task="single_shot_extension">
+          <h3>Input Video</h3>
+          <label>
+            Video URL or path
+            <input name="input_video" type="text" placeholder="https://.../source.mp4">
+          </label>
+          <label>
+            Upload video
+            <input name="input_video_file" type="file" accept="video/*">
+          </label>
+        </div>
+
+        <div class="task-panel hidden" data-task="shot_switching_extension">
+          <h3>Input Video</h3>
+          <label>
+            Video URL or path
+            <input name="input_video" type="text" placeholder="https://.../source.mp4">
+          </label>
+          <label>
+            Upload video
+            <input name="input_video_file" type="file" accept="video/*">
+          </label>
+        </div>
+
+        <div class="task-panel hidden" data-task="talking_avatar">
+          <h3>Talking Avatar Inputs</h3>
+          <label>
+            Portrait image URL or path
+            <input name="input_image" type="text" placeholder="https://.../portrait.png">
+          </label>
+          <label>
+            Upload portrait image
+            <input name="input_image_file" type="file" accept="image/*">
+          </label>
+          <label>
+            Audio URL or path
+            <input name="input_audio" type="text" placeholder="https://.../speech.mp3">
+          </label>
+          <label>
+            Upload audio
+            <input name="input_audio_file" type="file" accept="audio/*">
+          </label>
+        </div>
+
+        <button type="submit" class="primary-btn">Generate</button>
+      </form>
+
+      <aside class="panel output-panel">
+        <div class="section-header">
+          <h2>Run Output</h2>
+          <p>The command preview and logs appear here.</p>
+        </div>
+
+        <div class="stack">
+          <div>
+            <h3>Command</h3>
+            <pre id="command-preview" class="code-box">No command yet.</pre>
+          </div>
+
+          <div>
+            <h3>Logs</h3>
+            <pre id="log-box" class="code-box log-box">Waiting for a job...</pre>
+          </div>
+
+          <div>
+            <h3>Result</h3>
+            <div id="result-box" class="result-box">No result yet.</div>
+            <video id="result-video" controls class="result-video hidden"></video>
+          </div>
+        </div>
+      </aside>
+    </section>
+  </main>
+
+  <script src="{{ url_for('static', filename='app.js') }}"></script>
+</body>
+</html>

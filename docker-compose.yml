@@ -1,0 +1,20 @@
+services:
+  skyreels:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "7860:7860"
+    gpus: all
+    environment:
+      SKYREELS_BACKEND_MODE: native
+      HF_HOME: /cache/huggingface
+      TRANSFORMERS_CACHE: /cache/huggingface
+    volumes:
+      - ./result:/workspace/result
+      - ./webapp/uploads:/workspace/webapp/uploads
+      - hf-cache:/cache/huggingface
+    shm_size: "16gb"
+
+volumes:
+  hf-cache:

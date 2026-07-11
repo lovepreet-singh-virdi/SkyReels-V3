@@ -12,6 +12,5 @@ torchrun --nproc_per_node 4 generate_video.py \
     --seed 42 \
     --use_usp \
     --offload \
-    --quant \
     --input_image "$INPUT_IMAGE" \
     --input_audio "$INPUT_AUDIO"
